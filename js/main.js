@@ -49,6 +49,7 @@ Promise.all([d3.json("data/mobility.json")]).then(function(mobility){
     .range([height - margin.bottom, 0])
     .domain([data.params['min_'+yVar], data.params['max_'+yVar]]);
   const line = d3.line()
+    .curve(d3.curveNatural)
     .x(d => xScale(d[xVar]))
     .y(d => yScale(d[yVar]));
   const xAxis = d3.axisBottom()
@@ -59,10 +60,24 @@ Promise.all([d3.json("data/mobility.json")]).then(function(mobility){
   gXAxis.call(xAxis);
   gYAxis.call(yAxis);
 
-  const path = g.selectAll("path").data(data.countries);
+  const path = g.append("g")
+    .selectAll("path")
+    .data(data.countries)
+    .join("path")
+      .attr("class", "country-line")
+      .attr("stroke", d =>  d.values[d.values.length - 1].moving_closer ? "#00a7c0" : '#f04e33')
+      .attr("d", d => line(d.values.slice(d.values.length - 3, d.values.length)));
 
-  path.enter().append("path")
-    .attr("class", "country-line")
-    .attr("d", d => line(d.values));
+  const circle = g.append("g")
+    .selectAll("circle")
+    .data(data.countries)
+    .join("circle")
+      .attr("class", "country-circle")
+      .attr("fill", d =>  d.values[d.values.length - 1].moving_closer ? "#00a7c0" : '#f04e33')
+      .attr("cx", d => xScale(d.values[d.values.length - 1][xVar]))
+      .attr("cy", d => yScale(d.values[d.values.length - 1][yVar]))
+      .attr("r", 5);
+
+
 
 })

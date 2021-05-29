@@ -62,7 +62,6 @@ h6 {
 .country-line {
   fill: none;
   opacity: 0.5;
-  stroke: darkgray;
   stroke-width: 1.5px;
   stroke-linejoin: round;
   stroke-linecap: round;
