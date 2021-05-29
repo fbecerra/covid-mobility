@@ -1,0 +1,60 @@
+body {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 16px;
+}
+
+.title {
+  font-family: 'David Libre', serif;
+  text-align: center;
+  padding-top: 40px;
+  padding-bottom: 30px;
+}
+
+.title h2 {
+  font-size: 42px;
+}
+
+.content {
+  padding-bottom: 30px;
+}
+
+.footer {
+  border-top: 1px solid #ccc !important;
+}
+
+.footer a {
+  color: #525252;
+  text-decoration: underline;
+}
+
+.footer a:hover{
+  color: black;
+}
+
+.notes {
+  padding-top: 20px;
+  font-size: 12px;
+  font-family: 'Lato', sans-serif;
+  color: #525252;
+}
+
+h6 {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 0;
+  margin: 0;
+}
+
+@media only screen and (max-width: 768px) {
+  body {
+    font-size: 12px;
+  }
+
+  .title h2 {
+    font-size: 24px;
+  }
+
+  .main-text, .notes {
+    padding: 0 30px;
+  }
+}
