@@ -177,9 +177,34 @@ Promise.all([d3.json("data/weekly_mobility.json")]).then(function(mobility){
 
     let idx = 0;
 
-    setInterval(() => {
+    timer = setInterval(() => {
       updatePlot(idx);
-      if (dates.length <= ++idx) idx = 0;
-    }, 200)
+      if (dates.length <= ++idx) {
+        idx = 0;
+        clearInterval(timer);
+      };
+    }, 300)
+
+    // slider
+    // const slider = d3.sliderHorizontal()
+    //   .min(trail)
+    //   .max(dates.length)
+    //   .step(1)
+    //   .width(300)
+    //   .displayValue(false)
+    //   .default(dates.length)
+    //   // .tickFormat(dates.map(d => formatTime(d)))
+    //   .on('onchange', val => {
+    //     console.log(val);
+    //     updatePlot(val);
+    //   })
+    //
+    // d3.select('#slider')
+    //   .append('svg')
+    //   .attr('width', 500)
+    //   .attr('height', 100)
+    //   .append('g')
+    //   .attr('transform', 'translate(30,30)')
+    //   .call(slider);
 
 })
