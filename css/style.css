@@ -66,10 +66,41 @@ h6 {
 
 .country-line {
   fill: none;
-  opacity: 0.5;
-  stroke-width: 2px;
+  stroke: #f04e33;
+  stroke-opacity: 0.3;
+  stroke-width: 2.5px;
   stroke-linejoin: round;
   stroke-linecap: round;
+}
+
+.country-line.closer {
+  stroke: #00a7c0;
+}
+
+.country-line.highlighted {
+  stroke-opacity: 0.8;
+}
+
+.country-line.hidden {
+  stroke: lightgray;
+  stroke-opacity: 0.2;
+}
+
+.country-circle {
+  fill: #f04e33;
+}
+
+.country-circle.closer {
+  fill: #00a7c0;
+}
+
+.country-circle.highlighted {
+  opacity: 1.0;
+}
+
+.country-circle.hidden {
+  fill: lightgray;
+  opacity: 0.2;
 }
 
 .plot {

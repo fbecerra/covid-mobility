@@ -126,15 +126,14 @@ Promise.all([d3.json("data/mobility.json")]).then(function(mobility){
       .selectAll("path")
       .data(data.countries)
       .join("path")
-        .attr("class", "country-line")
-        .attr("stroke-opacity", pathOpacity)
+        .attr("class", "country-line");
 
     const circle = g.append("g")
       .selectAll("circle")
       .data(data.countries)
       .join("circle")
         .attr("class", "country-circle")
-        .attr("fill", d => getColor(d, d.values.length - 1))
+        // .attr("fill", d => getColor(d, d.values.length - 1))
         .attr("r", circleRadius);
 
     const cells = g.append("g")
@@ -147,12 +146,14 @@ Promise.all([d3.json("data/mobility.json")]).then(function(mobility){
           .style("pointer-events", "all")
 
     updatePlot = (idx) => {
-      path.transition().duration(200)
-        .attr("stroke", d => getColor(d, idx))
+      path
+        .classed("closer", d => d.values[idx].moving_closer)
+        .transition().duration(200)
         .attr("d", d => line(d.values.slice(idx - trail, idx + 1)));
 
-      circle.transition().duration(200)
-        .attr("fill", d =>  getColor(d, idx))
+      circle.classed("closer", d => d.values[idx].moving_closer)
+        .transition().duration(200)
+        // .attr("fill", d =>  getColor(d, idx))
         .attr("cx", d => xScale(d.values[idx][xVar]))
         .attr("cy", d => yScale(d.values[idx][yVar]))
 
@@ -161,26 +162,31 @@ Promise.all([d3.json("data/mobility.json")]).then(function(mobility){
         .voronoi([margin.left, margin.top, width - margin.right, height - margin.bottom]);
       cells.attr("d", (d,i) => voronoi.renderCell(i))
         .on("mouseover", (event, d) => {
-          path.filter(c => c.name !== d.name)
-            .attr("stroke", "lightgray")
-            .attr("opacity", backOpacity);
-          path.filter(c => c.name === d.name)
-            .attr("stroke", c =>  getColor(c, idx))
-            .attr("stroke-opacity", circleOpacity);
+          let allPaths = d3.select("body").selectAll(".country-line"),
+            allCircles = d3.select("body").selectAll(".country-circle");
 
-          circle.filter(c => c.name !== d.name)
-            .attr("fill", "lightgray")
-            .attr("stroke-opacity", backOpacity);
+          allPaths.classed("hidden", c => c.name !== d.name);
+          allPaths.filter(c => c.name === d.name)
+            .classed("highlighted", true);
+
+          allCircles.classed("hidden", c => c.name !== d.name);
+          allCircles.filter(c => c.name === d.name)
+            .classed("highlighted", true);
 
           tooltip
             .attr("transform", `translate(${xScale(d.values[idx][xVar]) + margin.left + tooltipMargin}, ${yScale(d.values[idx][yVar]) + margin.top})`)
             .call(callout, `${d.name}`);
         })
         .on("mouseleave", (event, d) => {
-          path.attr("stroke", d =>  getColor(d, idx))
-            .attr("stroke-opacity", pathOpacity);
-          circle.attr("fill", d =>  getColor(d, idx))
-            .attr("opacity", circleOpacity);
+          let allPaths = d3.select("body").selectAll(".country-line"),
+            allCircles = d3.select("body").selectAll(".country-circle");
+
+          allPaths.classed("hidden", false)
+            .classed("highlighted", false);
+
+          allCircles.classed("hidden", false)
+            .classed("highlighted", false);
+
           tooltip.call(callout, null)
         });
       }
@@ -202,7 +208,7 @@ Promise.all([d3.json("data/mobility.json")]).then(function(mobility){
     addPlot(vizDiv4, 10);
 
     const vizDiv5 = d3.select("#viz-5");
-    addPlot(vizDiv5, 13);
+    addPlot(vizDiv5, 12);
 
     const vizDiv6 = d3.select("#viz-6");
     addPlot(vizDiv6, 14);
