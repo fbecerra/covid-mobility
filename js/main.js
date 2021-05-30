@@ -30,7 +30,9 @@ Promise.all([d3.json("data/mobility.json")]).then(function(mobility){
   const width = window.innerWidth - margin.left - margin.right,
         height = window.innerHeight - margin.top - margin.bottom;
 
-  const pathOpacity = 0.3;
+  const pathOpacity = 0.7;
+  const circleOpacity = 0.9;
+  const backOpacity = 0.3;
 
   const svg = d3.select("#viz").append("svg")
     .attr("viewBox", [0, 0, width + margin.left + margin.right, height + margin.top + margin.bottom])
@@ -104,7 +106,7 @@ Promise.all([d3.json("data/mobility.json")]).then(function(mobility){
     .data(data.countries)
     .join("path")
       .attr("class", "country-line")
-      .attr("id", d => `${d.name}-line`)
+      .attr("stroke-opacity", pathOpacity)
 
   const circle = g.append("g")
     .selectAll("circle")
@@ -138,25 +140,26 @@ Promise.all([d3.json("data/mobility.json")]).then(function(mobility){
       .voronoi([margin.left, margin.top, width - margin.right, height - margin.bottom]);
     cells.attr("d", (d,i) => voronoi.renderCell(i))
       .on("mouseover", (event, d) => {
-        console.log(event, d)
         path.filter(c => c.name !== d.name)
           .attr("stroke", "lightgray")
-          .attr("opacity", pathOpacity);
+          .attr("opacity", backOpacity);
         path.filter(c => c.name === d.name)
           .attr("stroke", c =>  getColor(c, idx))
+          .attr("stroke-opacity", circleOpacity);
 
         circle.filter(c => c.name !== d.name)
           .attr("fill", "lightgray")
-          .attr("opacity", pathOpacity);
+          .attr("stroke-opacity", backOpacity);
 
         tooltip
           .attr("transform", `translate(${xScale(d.values[idx][xVar]) + margin.left + tooltipMargin}, ${yScale(d.values[idx][yVar]) + margin.top})`)
-          .call(callout, `${d.name}`)
+          .call(callout, `${d.name}`);
       })
       .on("mouseleave", (event, d) => {
         path.attr("stroke", d =>  getColor(d, idx))
+          .attr("stroke-opacity", pathOpacity);
         circle.attr("fill", d =>  getColor(d, idx))
-          .attr("opacity", 1.0);
+          .attr("opacity", circleOpacity);
         tooltip.call(callout, null)
       });
     }
