@@ -24,11 +24,11 @@ Promise.all([d3.json("data/mobility.json")]).then(function(mobility){
   if (mobile) {
     margin = {top: 30, right: 20, bottom: 20, left: 100};
   } else {
-    margin = {top: 60, right: 20, bottom: 80, left: 180};
+    margin = {top: 40, right: 20, bottom: 40, left: 20};
   }
 
-  const width = window.innerWidth - margin.left - margin.right,
-        height = window.innerHeight - margin.top - margin.bottom;
+  const width = window.innerWidth * 0.8 - margin.left - margin.right,
+        height = window.innerHeight * 0.8 - margin.top - margin.bottom;
 
   const pathOpacity = 0.7;
   const circleOpacity = 0.9;
@@ -53,10 +53,10 @@ Promise.all([d3.json("data/mobility.json")]).then(function(mobility){
 
   const xScale = d3.scaleLinear()
     .range([margin.left, width - margin.right])
-    .domain([data.params['min_'+xVar], data.params['max_'+xVar]]);
+    .domain([-80, 30]);
   const yScale = d3.scaleLinear()
     .range([height - margin.bottom, 0])
-    .domain([data.params['min_'+yVar], data.params['max_'+yVar]]);
+    .domain([-20, 50]);
   const line = d3.line()
     .curve(d3.curveNatural)
     .x(d => xScale(d[xVar]))
@@ -64,10 +64,23 @@ Promise.all([d3.json("data/mobility.json")]).then(function(mobility){
   const xAxis = d3.axisBottom()
     .scale(xScale);
   const yAxis = d3.axisLeft()
-    .scale(yScale);
+    .scale(yScale)
+    .tickValues(d3.range(-20, 60, 10));
 
   gXAxis.call(xAxis);
   gYAxis.call(yAxis);
+
+  gXAxis.selectAll(".domain").remove();
+  gXAxis.selectAll(".tick line")
+    .attr("stroke-opacity", 0.1)
+    .attr("class", "axis-line")
+    .attr("y2", margin.bottom - height);
+
+  gYAxis.selectAll(".domain").remove();
+  gYAxis.selectAll(".tick line")
+    .attr("stroke-opacity", 0.1)
+    .attr("class", "axis-line")
+    .attr("x2", width - margin.right - margin.left);
 
   const tooltipMargin = 10;
   const tooltip = svg.append("g");
@@ -78,8 +91,6 @@ Promise.all([d3.json("data/mobility.json")]).then(function(mobility){
     g
       .style("display", null)
       .style("pointer-events", "none")
-      .style("font", "11px sans-serif")
-      .style("font-family", 'Montserrat')
       .style("font-size", 12)
 
     const text = g.selectAll("text")
