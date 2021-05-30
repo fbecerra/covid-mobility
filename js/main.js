@@ -15,7 +15,6 @@ Promise.all([d3.json("data/mobility.json")]).then(function(mobility){
 
   const trail = 2;
   const dates = data.countries[0].values.map(d => d.date).slice(trail);
-  console.log(dates)
 
   const mobile = window.innerWidth < 768;
   let margin;
