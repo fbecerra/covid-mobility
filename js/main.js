@@ -23,7 +23,7 @@ Promise.all([d3.json("data/mobility.json")]).then(function(mobility){
   if (mobile) {
     margin = {top: 30, right: 20, bottom: 20, left: 100};
   } else {
-    margin = {top: 40, right: 15, bottom: 40, left: 15};
+    margin = {top: 50, right: 15, bottom: 40, left: 15};
   }
 
   const pathOpacity = 0.3;
@@ -115,7 +115,8 @@ Promise.all([d3.json("data/mobility.json")]).then(function(mobility){
       return d.values[idx].moving_closer ? "#00a7c0" : '#f04e33'
     }
 
-    const title = g.append("g")
+    const title = svg.append("g")
+      .attr("transform", `translate(0, ${margin.top/2})`)
       .selectAll("text")
       .data([dates[month-1]])
       .join("text")
