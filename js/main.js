@@ -68,10 +68,32 @@ Promise.all([d3.json("data/mobility.json")]).then(function(mobility){
   gYAxis.call(yAxis);
 
   const tooltipMargin = 10;
-  const tooltip = d3.select("body").append("div")
-    .attr("class", "tooltip")
-    .style("opacity", 0)
-    .style("max-width", margin.left * 4/3 + "px");
+  const tooltip = svg.append("g");
+
+  callout = (g, value) => {
+    if (!value) return g.style("display", "none");
+
+    g
+      .style("display", null)
+      .style("pointer-events", "none")
+      .style("font", "11px sans-serif")
+      .style("font-family", 'Montserrat')
+      .style("font-size", 12)
+
+    const text = g.selectAll("text")
+      .data([null])
+      .join("text")
+      .call(text => text
+        .selectAll("tspan")
+        .data((value + "").split(/\n/))
+        .join("tspan")
+          .attr("x", 0)
+          .attr("y", (d, i) => `${i * 1.1}em`)
+          .style("font-weight", (_, i) => i ? null : "600")
+          .text(d => d));
+  }
+
+  let voronoi;
 
   getColor = (d, idx) => {
     return d.values[idx].moving_closer ? "#00a7c0" : '#f04e33'
@@ -92,17 +114,31 @@ Promise.all([d3.json("data/mobility.json")]).then(function(mobility){
       .attr("fill", d => getColor(d, d.values.length - 1))
       .attr("r", 5);
 
+  const cells = g.append("g")
+    .attr("class", "voronoiWrapper")
+     .selectAll("path")
+     .data(data.countries)
+     .join("path")
+        .attr("opacity", 0.5)
+        .attr("fill", "none")
+        .style("pointer-events", "all")
+
   updatePlot = (idx) => {
     path.transition().duration(200)
-    .attr("stroke", d => getColor(d, idx))
-    .attr("d", d => line(d.values.slice(idx - trail, idx + 1)));
+      .attr("stroke", d => getColor(d, idx))
+      .attr("d", d => line(d.values.slice(idx - trail, idx + 1)));
 
     circle.transition().duration(200)
       .attr("fill", d =>  getColor(d, idx))
       .attr("cx", d => xScale(d.values[idx][xVar]))
       .attr("cy", d => yScale(d.values[idx][yVar]))
 
-    circle.on("mouseover", (event, d) => {
+    voronoi = d3.Delaunay
+      .from(data.countries, d => xScale(d.values[idx][xVar]), d => yScale(d.values[idx][yVar]))
+      .voronoi([margin.left, margin.top, width - margin.right, height - margin.bottom]);
+    cells.attr("d", (d,i) => voronoi.renderCell(i))
+      .on("mouseover", (event, d) => {
+        console.log(event, d)
         path.filter(c => c.name !== d.name)
           .attr("stroke", "lightgray")
           .attr("opacity", pathOpacity);
@@ -113,20 +149,15 @@ Promise.all([d3.json("data/mobility.json")]).then(function(mobility){
           .attr("fill", "lightgray")
           .attr("opacity", pathOpacity);
 
-        tooltip.html(`<p><strong>${d.name}</strong></p>`)
-
-        tooltip.style("left", `${event.pageX + tooltipMargin}px`)
-          .style("top", `${event.pageY}px`)
-          .transition().duration(200)
-          .style("opacity", 1.0)
-
+        tooltip
+          .attr("transform", `translate(${xScale(d.values[idx][xVar]) + margin.left + tooltipMargin}, ${yScale(d.values[idx][yVar]) + margin.top})`)
+          .call(callout, `${d.name}`)
       })
       .on("mouseleave", (event, d) => {
         path.attr("stroke", d =>  getColor(d, idx))
         circle.attr("fill", d =>  getColor(d, idx))
           .attr("opacity", 1.0);
-        tooltip.transition().duration(200)
-          .style("opacity", 0.0)
+        tooltip.call(callout, null)
       });
     }
 
