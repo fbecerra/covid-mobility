@@ -13,6 +13,11 @@ Promise.all([d3.json("data/mobility.json")]).then(function(mobility){
     })
   })
 
+  const trail = 2;
+  const dates = data.countries[0].values.map(d => d.date).slice(trail);
+  console.log(dates)
+
+
   const mobile = window.innerWidth < 768;
   let margin;
 
@@ -60,11 +65,13 @@ Promise.all([d3.json("data/mobility.json")]).then(function(mobility){
   gXAxis.call(xAxis);
   gYAxis.call(yAxis);
 
+
   const path = g.append("g")
     .selectAll("path")
     .data(data.countries)
     .join("path")
       .attr("class", "country-line")
+      .attr("id", d => `${d.name}-line`)
       .attr("stroke", d =>  d.values[d.values.length - 1].moving_closer ? "#00a7c0" : '#f04e33')
       .attr("d", d => line(d.values.slice(d.values.length - 3, d.values.length)));
 
@@ -76,7 +83,25 @@ Promise.all([d3.json("data/mobility.json")]).then(function(mobility){
       .attr("fill", d =>  d.values[d.values.length - 1].moving_closer ? "#00a7c0" : '#f04e33')
       .attr("cx", d => xScale(d.values[d.values.length - 1][xVar]))
       .attr("cy", d => yScale(d.values[d.values.length - 1][yVar]))
-      .attr("r", 5);
+      .attr("r", 5)
+      .on("mouseover", (event, d) => {
+        path.filter(c => c.name !== d.name)
+          .attr("stroke", "lightgray")
+          .attr("opacity", 0.3);
+        path.filter(c => c.name === d.name)
+          .attr("stroke", c =>  c.values[c.values.length - 1].moving_closer ? "#00a7c0" : '#f04e33')
+          .attr("d", c => line(c.values));
+
+        circle.filter(c => c.name !== d.name)
+          .attr("fill", "lightgray")
+          .attr("opacity", 0.3);
+      })
+      .on("mouseleave", (event, d) => {
+        path.attr("stroke", d =>  d.values[d.values.length - 1].moving_closer ? "#00a7c0" : '#f04e33')
+          .attr("d", d => line(d.values.slice(d.values.length - 3, d.values.length)));
+        circle.attr("fill", d =>  d.values[d.values.length - 1].moving_closer ? "#00a7c0" : '#f04e33')
+          .attr("opacity", 1.0);
+      });
 
 
 
