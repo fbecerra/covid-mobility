@@ -30,6 +30,8 @@ Promise.all([d3.json("data/mobility.json")]).then(function(mobility){
   const width = window.innerWidth - margin.left - margin.right,
         height = window.innerHeight - margin.top - margin.bottom;
 
+  const pathOpacity = 0.3;
+
   const svg = d3.select("#viz").append("svg")
     .attr("viewBox", [0, 0, width + margin.left + margin.right, height + margin.top + margin.bottom])
     .attr("width", width + margin.left + margin.right)
@@ -65,6 +67,15 @@ Promise.all([d3.json("data/mobility.json")]).then(function(mobility){
   gXAxis.call(xAxis);
   gYAxis.call(yAxis);
 
+  const tooltipMargin = 10;
+  const tooltip = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0)
+    .style("max-width", margin.left * 4/3 + "px");
+
+  getColor = (d, idx) => {
+    return d.values[idx].moving_closer ? "#00a7c0" : '#f04e33'
+  }
 
   const path = g.append("g")
     .selectAll("path")
@@ -72,79 +83,64 @@ Promise.all([d3.json("data/mobility.json")]).then(function(mobility){
     .join("path")
       .attr("class", "country-line")
       .attr("id", d => `${d.name}-line`)
-      // .attr("stroke", d =>  d.values[d.values.length - 1].moving_closer ? "#00a7c0" : '#f04e33')
-      // .attr("d", d => line(d.values.slice(d.values.length - 3, d.values.length)));
 
   const circle = g.append("g")
     .selectAll("circle")
     .data(data.countries)
     .join("circle")
       .attr("class", "country-circle")
-      .attr("fill", d =>  d.values[d.values.length - 1].moving_closer ? "#00a7c0" : '#f04e33')
-      // .attr("cx", d => xScale(d.values[d.values.length - 1][xVar]))
-      // .attr("cy", d => yScale(d.values[d.values.length - 1][yVar]))
-      .attr("r", 5)
-      // .on("mouseover", (event, d) => {
-      //   path.filter(c => c.name !== d.name)
-      //     .attr("stroke", "lightgray")
-      //     .attr("opacity", 0.3);
-      //   path.filter(c => c.name === d.name)
-      //     .attr("stroke", c =>  c.values[c.values.length - 1].moving_closer ? "#00a7c0" : '#f04e33')
-      //     .attr("d", c => line(c.values));
-      //
-      //   circle.filter(c => c.name !== d.name)
-      //     .attr("fill", "lightgray")
-      //     .attr("opacity", 0.3);
-      // })
-      // .on("mouseleave", (event, d) => {
-      //   path.attr("stroke", d =>  d.values[d.values.length - 1].moving_closer ? "#00a7c0" : '#f04e33')
-      //     .attr("d", d => line(d.values.slice(d.values.length - 3, d.values.length)));
-      //   circle.attr("fill", d =>  d.values[d.values.length - 1].moving_closer ? "#00a7c0" : '#f04e33')
-      //     .attr("opacity", 1.0);
-      // });
+      .attr("fill", d => getColor(d, d.values.length - 1))
+      .attr("r", 5);
 
+  updatePlot = (idx) => {
+    path.transition().duration(200)
+    .attr("stroke", d => getColor(d, idx))
+    .attr("d", d => line(d.values.slice(idx - trail, idx + 1)));
 
-    updatePlot = (idx) => {
-      path.transition().duration(200)
-      .attr("stroke", d =>  d.values[idx].moving_closer ? "#00a7c0" : '#f04e33')
-      .attr("d", d => line(d.values.slice(idx - trail, idx + 1)));
+    circle.transition().duration(200)
+      .attr("fill", d =>  getColor(d, idx))
+      .attr("cx", d => xScale(d.values[idx][xVar]))
+      .attr("cy", d => yScale(d.values[idx][yVar]))
 
-      circle.transition().duration(200)
-        .attr("fill", d =>  d.values[idx].moving_closer ? "#00a7c0" : '#f04e33')
-        .attr("cx", d => xScale(d.values[idx][xVar]))
-        .attr("cy", d => yScale(d.values[idx][yVar]))
+    circle.on("mouseover", (event, d) => {
+        path.filter(c => c.name !== d.name)
+          .attr("stroke", "lightgray")
+          .attr("opacity", pathOpacity);
+        path.filter(c => c.name === d.name)
+          .attr("stroke", c =>  getColor(c, idx))
 
-      circle.on("mouseover", (event, d) => {
-          path.filter(c => c.name !== d.name)
-            .attr("stroke", "lightgray")
-            .attr("opacity", 0.3);
-          path.filter(c => c.name === d.name)
-            .attr("stroke", c =>  c.values[idx].moving_closer ? "#00a7c0" : '#f04e33')
-            .attr("d", c => line(c.values));
+        circle.filter(c => c.name !== d.name)
+          .attr("fill", "lightgray")
+          .attr("opacity", pathOpacity);
 
-          circle.filter(c => c.name !== d.name)
-            .attr("fill", "lightgray")
-            .attr("opacity", 0.3);
-        })
-        .on("mouseleave", (event, d) => {
-          path.attr("stroke", d =>  d.values[idx].moving_closer ? "#00a7c0" : '#f04e33')
-            .attr("d", d => line(d.values.slice(idx - trail, idx + 1)));
-          circle.attr("fill", d =>  d.values[idx].moving_closer ? "#00a7c0" : '#f04e33')
-            .attr("opacity", 1.0);
-        });
+        tooltip.html(`<p><strong>${d.name}</strong></p>`)
+
+        tooltip.style("left", `${event.pageX + tooltipMargin}px`)
+          .style("top", `${event.pageY}px`)
+          .transition().duration(200)
+          .style("opacity", 1.0)
+
+      })
+      .on("mouseleave", (event, d) => {
+        path.attr("stroke", d =>  getColor(d, idx))
+        circle.attr("fill", d =>  getColor(d, idx))
+          .attr("opacity", 1.0);
+        tooltip.transition().duration(200)
+          .style("opacity", 0.0)
+      });
     }
 
+    // Initial drawing at last date
     updatePlot(dates.length);
-
 
     // slider
     const slider = d3.sliderHorizontal()
-      .min(0)
-      .max(dates.length-1)
+      .min(trail)
+      .max(dates.length)
       .step(1)
       .width(300)
       .displayValue(false)
-      .default(dates.length-1)
+      .default(dates.length)
       // .tickFormat(dates.map(d => formatTime(d)))
       .on('onchange', val => {
         updatePlot(val);
