@@ -23,10 +23,10 @@ Promise.all([d3.json("data/mobility.json")]).then(function(mobility){
   if (mobile) {
     margin = {top: 30, right: 20, bottom: 20, left: 100};
   } else {
-    margin = {top: 40, right: 20, bottom: 40, left: 20};
+    margin = {top: 40, right: 15, bottom: 40, left: 15};
   }
 
-  const pathOpacity = 0.5;
+  const pathOpacity = 0.3;
   const circleOpacity = 0.9;
   const backOpacity = 0.3;
   const circleRadius = 2.5;
@@ -34,8 +34,8 @@ Promise.all([d3.json("data/mobility.json")]).then(function(mobility){
   addPlot = (container, month) => {
     const containerRect = container.node().getBoundingClientRect();
     const ratio = window.innerWidth / window.innerHeight;
-    const width = containerRect.width * 0.9 - margin.left - margin.right,
-          height = containerRect.width * 0.9 / ratio - margin.top - margin.bottom;
+    const width = containerRect.width - margin.left - margin.right,
+          height = containerRect.width / ratio * 1.3 - margin.top - margin.bottom;
 
     const svg = container.append("svg")
       .attr("viewBox", [0, 0, width + margin.left + margin.right, height + margin.top + margin.bottom])
@@ -65,10 +65,11 @@ Promise.all([d3.json("data/mobility.json")]).then(function(mobility){
       .x(d => xScale(d[xVar]))
       .y(d => yScale(d[yVar]));
     const xAxis = d3.axisBottom()
-      .scale(xScale);
+      .scale(xScale)
+      .tickValues(d3.range(-80, 40, 20));
     const yAxis = d3.axisLeft()
       .scale(yScale)
-      .tickValues(d3.range(-20, 60, 10));
+      .tickValues(d3.range(-20, 60, 20));
 
     gXAxis.call(xAxis);
     gYAxis.call(yAxis);
@@ -92,8 +93,7 @@ Promise.all([d3.json("data/mobility.json")]).then(function(mobility){
     callout = (g, value) => {
       if (!value) return g.style("display", "none");
 
-      g
-        .style("display", null)
+      g.style("display", null)
         .style("pointer-events", "none")
 
       const text = g.selectAll("text")
@@ -114,6 +114,13 @@ Promise.all([d3.json("data/mobility.json")]).then(function(mobility){
     getColor = (d, idx) => {
       return d.values[idx].moving_closer ? "#00a7c0" : '#f04e33'
     }
+
+    const title = g.append("g")
+      .selectAll("text")
+      .data([dates[month-1]])
+      .join("text")
+        .attr("class", "plot-title")
+        .text(d => formatTime(d))
 
     const path = g.append("g")
       .selectAll("path")
@@ -189,10 +196,16 @@ Promise.all([d3.json("data/mobility.json")]).then(function(mobility){
     addPlot(vizDiv2, 4);
 
     const vizDiv3 = d3.select("#viz-3");
-    addPlot(vizDiv3, 7);
+    addPlot(vizDiv3, 6);
 
     const vizDiv4 = d3.select("#viz-4");
-    addPlot(vizDiv4, 14);
+    addPlot(vizDiv4, 10);
+
+    const vizDiv5 = d3.select("#viz-5");
+    addPlot(vizDiv5, 12);
+
+    const vizDiv6 = d3.select("#viz-6");
+    addPlot(vizDiv6, 14);
 
 
 

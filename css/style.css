@@ -68,10 +68,14 @@ h6 {
   stroke-linecap: round;
 }
 
-#viz {
+.plot {
   font-family: 'Lato', sans-serif;
 }
 
 .viz-tooltip {
   font-size: 14px;
+}
+
+.plot-title {
+  font-weight: 700;
 }
