@@ -30,7 +30,7 @@ Promise.all([d3.json("data/mobility.json")]).then(function(mobility){
   const backOpacity = 0.3;
   const circleRadius = 2.5;
 
-  addPlot = (container, month) => {
+  addPlot = (container, dateIdx) => {
     const containerRect = container.node().getBoundingClientRect();
     const ratio = window.innerWidth / window.innerHeight;
     const width = containerRect.width - margin.left - margin.right,
@@ -110,14 +110,10 @@ Promise.all([d3.json("data/mobility.json")]).then(function(mobility){
 
     let voronoi;
 
-    getColor = (d, idx) => {
-      return d.values[idx].moving_closer ? "#00a7c0" : '#f04e33'
-    }
-
     const title = svg.append("g")
       .attr("transform", `translate(0, ${margin.top/2})`)
       .selectAll("text")
-      .data([dates[month-1]])
+      .data([dates[dateIdx-1]])
       .join("text")
         .attr("class", "plot-title")
         .text(d => formatTime(d))
@@ -133,7 +129,6 @@ Promise.all([d3.json("data/mobility.json")]).then(function(mobility){
       .data(data.countries)
       .join("circle")
         .attr("class", "country-circle")
-        // .attr("fill", d => getColor(d, d.values.length - 1))
         .attr("r", circleRadius);
 
     const cells = g.append("g")
@@ -145,95 +140,65 @@ Promise.all([d3.json("data/mobility.json")]).then(function(mobility){
           .attr("fill", "none")
           .style("pointer-events", "all")
 
-    updatePlot = (idx) => {
-      path
-        .classed("closer", d => d.values[idx].moving_closer)
-        .transition().duration(200)
-        .attr("d", d => line(d.values.slice(idx - trail, idx + 1)));
+    path
+      .classed("closer", d => d.values[dateIdx].moving_closer)
+      .transition().duration(200)
+      .attr("d", d => line(d.values.slice(dateIdx - trail, dateIdx + 1)));
 
-      circle.classed("closer", d => d.values[idx].moving_closer)
-        .transition().duration(200)
-        // .attr("fill", d =>  getColor(d, idx))
-        .attr("cx", d => xScale(d.values[idx][xVar]))
-        .attr("cy", d => yScale(d.values[idx][yVar]))
+    circle.classed("closer", d => d.values[dateIdx].moving_closer)
+      .transition().duration(200)
+      .attr("cx", d => xScale(d.values[dateIdx][xVar]))
+      .attr("cy", d => yScale(d.values[dateIdx][yVar]))
 
-      voronoi = d3.Delaunay
-        .from(data.countries, d => xScale(d.values[idx][xVar]), d => yScale(d.values[idx][yVar]))
-        .voronoi([margin.left, margin.top, width - margin.right, height - margin.bottom]);
-      cells.attr("d", (d,i) => voronoi.renderCell(i))
-        .on("mouseover", (event, d) => {
-          let allPaths = d3.select("body").selectAll(".country-line"),
-            allCircles = d3.select("body").selectAll(".country-circle");
+    voronoi = d3.Delaunay
+      .from(data.countries, d => xScale(d.values[dateIdx][xVar]), d => yScale(d.values[dateIdx][yVar]))
+      .voronoi([margin.left, margin.top, width - margin.right, height - margin.bottom]);
+    cells.attr("d", (d,i) => voronoi.renderCell(i))
+      .on("mouseover", (event, d) => {
+        let allPaths = d3.select("body").selectAll(".country-line"),
+          allCircles = d3.select("body").selectAll(".country-circle");
 
-          allPaths.classed("hidden", c => c.name !== d.name);
-          allPaths.filter(c => c.name === d.name)
-            .classed("highlighted", true);
+        allPaths.classed("hidden", c => c.name !== d.name);
+        allPaths.filter(c => c.name === d.name)
+          .classed("highlighted", true);
 
-          allCircles.classed("hidden", c => c.name !== d.name);
-          allCircles.filter(c => c.name === d.name)
-            .classed("highlighted", true);
+        allCircles.classed("hidden", c => c.name !== d.name);
+        allCircles.filter(c => c.name === d.name)
+          .classed("highlighted", true);
 
-          tooltip
-            .attr("transform", `translate(${xScale(d.values[idx][xVar]) + margin.left + tooltipMargin}, ${yScale(d.values[idx][yVar]) + margin.top})`)
-            .call(callout, `${d.name}`);
-        })
-        .on("mouseleave", (event, d) => {
-          let allPaths = d3.select("body").selectAll(".country-line"),
-            allCircles = d3.select("body").selectAll(".country-circle");
+        tooltip
+          .attr("transform", `translate(${xScale(d.values[dateIdx][xVar]) + margin.left + tooltipMargin}, ${yScale(d.values[dateIdx][yVar]) + margin.top})`)
+          .call(callout, `${d.name}`);
+      })
+      .on("mouseleave", (event, d) => {
+        let allPaths = d3.select("body").selectAll(".country-line"),
+          allCircles = d3.select("body").selectAll(".country-circle");
 
-          allPaths.classed("hidden", false)
-            .classed("highlighted", false);
+        allPaths.classed("hidden", false)
+          .classed("highlighted", false);
 
-          allCircles.classed("hidden", false)
-            .classed("highlighted", false);
+        allCircles.classed("hidden", false)
+          .classed("highlighted", false);
 
-          tooltip.call(callout, null)
-        });
-      }
-
-      // Initial drawing at last date
-      updatePlot(month);
+        tooltip.call(callout, null)
+      });
     }
 
-    const vizDiv1 = d3.select("#viz-1");
-    addPlot(vizDiv1, 2);
+  const vizDiv1 = d3.select("#viz-1");
+  addPlot(vizDiv1, 2);
 
-    const vizDiv2 = d3.select("#viz-2");
-    addPlot(vizDiv2, 4);
+  const vizDiv2 = d3.select("#viz-2");
+  addPlot(vizDiv2, 4);
 
-    const vizDiv3 = d3.select("#viz-3");
-    addPlot(vizDiv3, 6);
+  const vizDiv3 = d3.select("#viz-3");
+  addPlot(vizDiv3, 6);
 
-    const vizDiv4 = d3.select("#viz-4");
-    addPlot(vizDiv4, 10);
+  const vizDiv4 = d3.select("#viz-4");
+  addPlot(vizDiv4, 10);
 
-    const vizDiv5 = d3.select("#viz-5");
-    addPlot(vizDiv5, 12);
+  const vizDiv5 = d3.select("#viz-5");
+  addPlot(vizDiv5, 12);
 
-    const vizDiv6 = d3.select("#viz-6");
-    addPlot(vizDiv6, 14);
-
-
-
-    // // slider
-    // const slider = d3.sliderHorizontal()
-    //   .min(trail)
-    //   .max(dates.length)
-    //   .step(1)
-    //   .width(300)
-    //   .displayValue(false)
-    //   .default(dates.length)
-    //   // .tickFormat(dates.map(d => formatTime(d)))
-    //   .on('onchange', val => {
-    //     updatePlot(val);
-    //   })
-    //
-    // d3.select('#slider')
-    //   .append('svg')
-    //   .attr('width', 500)
-    //   .attr('height', 100)
-    //   .append('g')
-    //   .attr('transform', 'translate(30,30)')
-    //   .call(slider);
-
+  const vizDiv6 = d3.select("#viz-6");
+  addPlot(vizDiv6, 14);
 })
