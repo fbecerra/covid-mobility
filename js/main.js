@@ -56,10 +56,10 @@ Promise.all([d3.json("data/mobility.json")]).then(function(mobility){
 
     const xScale = d3.scaleLinear()
       .range([margin.left, width - margin.right])
-      .domain([-80, 30]);
+      .domain([-80, 20]);
     const yScale = d3.scaleLinear()
       .range([height - margin.bottom, 0])
-      .domain([-20, 50]);
+      .domain([-15, 45]);
     const line = d3.line()
       .curve(d3.curveNatural)
       .x(d => xScale(d[xVar]))
@@ -69,7 +69,7 @@ Promise.all([d3.json("data/mobility.json")]).then(function(mobility){
       .tickValues(d3.range(-80, 40, 20));
     const yAxis = d3.axisLeft()
       .scale(yScale)
-      .tickValues(d3.range(-20, 60, 20));
+      .tickValues(d3.range(-0, 60, 20));
 
     gXAxis.call(xAxis);
     gYAxis.call(yAxis);
@@ -203,7 +203,7 @@ Promise.all([d3.json("data/mobility.json")]).then(function(mobility){
     addPlot(vizDiv4, 10);
 
     const vizDiv5 = d3.select("#viz-5");
-    addPlot(vizDiv5, 12);
+    addPlot(vizDiv5, 13);
 
     const vizDiv6 = d3.select("#viz-6");
     addPlot(vizDiv6, 14);
