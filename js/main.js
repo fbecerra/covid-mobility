@@ -1,19 +1,19 @@
-Promise.all([d3.json("data/mobility.json")]).then(function(mobility){
+Promise.all([d3.json("data/weekly_mobility.json")]).then(function(mobility){
 
   const data = mobility[0];
 
   console.log(data);
 
-  const parseTime = d3.timeParse("%Y-%m"),
+  const parseTime = d3.timeParse("%Y-%m-%d"),
         formatTime = d3.timeFormat("%B, %Y");
 
   data.countries.forEach(d => {
     d.values.forEach(v => {
-      v.date = parseTime(v.date);
+      v.date = parseTime(v.start_date);
     })
   })
 
-  const trail = 2;
+  const trail = 1;
   const dates = data.countries[0].values.map(d => d.date).slice(trail);
   console.log(dates)
 
@@ -53,7 +53,7 @@ Promise.all([d3.json("data/mobility.json")]).then(function(mobility){
 
   const xScale = d3.scaleLinear()
     .range([margin.left, width - margin.right])
-    .domain([-80, 30]);
+    .domain([-90, 40]);
   const yScale = d3.scaleLinear()
     .range([height - margin.bottom, 0])
     .domain([-20, 50]);
@@ -124,8 +124,7 @@ Promise.all([d3.json("data/mobility.json")]).then(function(mobility){
     .data(data.countries)
     .join("circle")
       .attr("class", "country-circle")
-      .attr("fill", d => getColor(d, d.values.length - 1))
-      .attr("r", 5);
+      .attr("fill", d => getColor(d, d.values.length - 1));
 
   const cells = g.append("g")
     .attr("class", "voronoiWrapper")
@@ -145,6 +144,7 @@ Promise.all([d3.json("data/mobility.json")]).then(function(mobility){
       .attr("fill", d =>  getColor(d, idx))
       .attr("cx", d => xScale(d.values[idx][xVar]))
       .attr("cy", d => yScale(d.values[idx][yVar]))
+      .attr("r", 5);
 
     voronoi = d3.Delaunay
       .from(data.countries, d => xScale(d.values[idx][xVar]), d => yScale(d.values[idx][yVar]))
@@ -175,28 +175,11 @@ Promise.all([d3.json("data/mobility.json")]).then(function(mobility){
       });
     }
 
-    // Initial drawing at last date
-    updatePlot(dates.length);
+    let idx = 0;
 
-    // slider
-    const slider = d3.sliderHorizontal()
-      .min(trail)
-      .max(dates.length)
-      .step(1)
-      .width(300)
-      .displayValue(false)
-      .default(dates.length)
-      // .tickFormat(dates.map(d => formatTime(d)))
-      .on('onchange', val => {
-        updatePlot(val);
-      })
-
-    d3.select('#slider')
-      .append('svg')
-      .attr('width', 500)
-      .attr('height', 100)
-      .append('g')
-      .attr('transform', 'translate(30,30)')
-      .call(slider);
+    setInterval(() => {
+      updatePlot(idx);
+      if (dates.length <= ++idx) idx = 0;
+    }, 200)
 
 })
