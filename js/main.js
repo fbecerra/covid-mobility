@@ -72,8 +72,8 @@ Promise.all([d3.json("data/mobility.json")]).then(function(mobility){
     .join("path")
       .attr("class", "country-line")
       .attr("id", d => `${d.name}-line`)
-      .attr("stroke", d =>  d.values[d.values.length - 1].moving_closer ? "#00a7c0" : '#f04e33')
-      .attr("d", d => line(d.values.slice(d.values.length - 3, d.values.length)));
+      // .attr("stroke", d =>  d.values[d.values.length - 1].moving_closer ? "#00a7c0" : '#f04e33')
+      // .attr("d", d => line(d.values.slice(d.values.length - 3, d.values.length)));
 
   const circle = g.append("g")
     .selectAll("circle")
@@ -81,28 +81,81 @@ Promise.all([d3.json("data/mobility.json")]).then(function(mobility){
     .join("circle")
       .attr("class", "country-circle")
       .attr("fill", d =>  d.values[d.values.length - 1].moving_closer ? "#00a7c0" : '#f04e33')
-      .attr("cx", d => xScale(d.values[d.values.length - 1][xVar]))
-      .attr("cy", d => yScale(d.values[d.values.length - 1][yVar]))
+      // .attr("cx", d => xScale(d.values[d.values.length - 1][xVar]))
+      // .attr("cy", d => yScale(d.values[d.values.length - 1][yVar]))
       .attr("r", 5)
-      .on("mouseover", (event, d) => {
-        path.filter(c => c.name !== d.name)
-          .attr("stroke", "lightgray")
-          .attr("opacity", 0.3);
-        path.filter(c => c.name === d.name)
-          .attr("stroke", c =>  c.values[c.values.length - 1].moving_closer ? "#00a7c0" : '#f04e33')
-          .attr("d", c => line(c.values));
+      // .on("mouseover", (event, d) => {
+      //   path.filter(c => c.name !== d.name)
+      //     .attr("stroke", "lightgray")
+      //     .attr("opacity", 0.3);
+      //   path.filter(c => c.name === d.name)
+      //     .attr("stroke", c =>  c.values[c.values.length - 1].moving_closer ? "#00a7c0" : '#f04e33')
+      //     .attr("d", c => line(c.values));
+      //
+      //   circle.filter(c => c.name !== d.name)
+      //     .attr("fill", "lightgray")
+      //     .attr("opacity", 0.3);
+      // })
+      // .on("mouseleave", (event, d) => {
+      //   path.attr("stroke", d =>  d.values[d.values.length - 1].moving_closer ? "#00a7c0" : '#f04e33')
+      //     .attr("d", d => line(d.values.slice(d.values.length - 3, d.values.length)));
+      //   circle.attr("fill", d =>  d.values[d.values.length - 1].moving_closer ? "#00a7c0" : '#f04e33')
+      //     .attr("opacity", 1.0);
+      // });
 
-        circle.filter(c => c.name !== d.name)
-          .attr("fill", "lightgray")
-          .attr("opacity", 0.3);
+
+    updatePlot = (idx) => {
+      path.transition().duration(200)
+      .attr("stroke", d =>  d.values[idx].moving_closer ? "#00a7c0" : '#f04e33')
+      .attr("d", d => line(d.values.slice(idx - trail, idx + 1)));
+
+      circle.transition().duration(200)
+        .attr("fill", d =>  d.values[idx].moving_closer ? "#00a7c0" : '#f04e33')
+        .attr("cx", d => xScale(d.values[idx][xVar]))
+        .attr("cy", d => yScale(d.values[idx][yVar]))
+
+      circle.on("mouseover", (event, d) => {
+          path.filter(c => c.name !== d.name)
+            .attr("stroke", "lightgray")
+            .attr("opacity", 0.3);
+          path.filter(c => c.name === d.name)
+            .attr("stroke", c =>  c.values[idx].moving_closer ? "#00a7c0" : '#f04e33')
+            .attr("d", c => line(c.values));
+
+          circle.filter(c => c.name !== d.name)
+            .attr("fill", "lightgray")
+            .attr("opacity", 0.3);
+        })
+        .on("mouseleave", (event, d) => {
+          path.attr("stroke", d =>  d.values[idx].moving_closer ? "#00a7c0" : '#f04e33')
+            .attr("d", d => line(d.values.slice(idx - trail, idx + 1)));
+          circle.attr("fill", d =>  d.values[idx].moving_closer ? "#00a7c0" : '#f04e33')
+            .attr("opacity", 1.0);
+        });
+    }
+
+    updatePlot(dates.length);
+
+
+    // slider
+    const slider = d3.sliderHorizontal()
+      .min(0)
+      .max(dates.length-1)
+      .step(1)
+      .width(300)
+      .displayValue(false)
+      .default(dates.length-1)
+      // .tickFormat(dates.map(d => formatTime(d)))
+      .on('onchange', val => {
+        updatePlot(val);
       })
-      .on("mouseleave", (event, d) => {
-        path.attr("stroke", d =>  d.values[d.values.length - 1].moving_closer ? "#00a7c0" : '#f04e33')
-          .attr("d", d => line(d.values.slice(d.values.length - 3, d.values.length)));
-        circle.attr("fill", d =>  d.values[d.values.length - 1].moving_closer ? "#00a7c0" : '#f04e33')
-          .attr("opacity", 1.0);
-      });
 
-
+    d3.select('#slider')
+      .append('svg')
+      .attr('width', 500)
+      .attr('height', 100)
+      .append('g')
+      .attr('transform', 'translate(30,30)')
+      .call(slider);
 
 })
