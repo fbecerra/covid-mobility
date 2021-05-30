@@ -83,7 +83,8 @@ Promise.all([d3.json("data/mobility.json")]).then(function(mobility){
     .attr("x2", width - margin.right - margin.left);
 
   const tooltipMargin = 10;
-  const tooltip = svg.append("g");
+  const tooltip = svg.append("g")
+    .attr("class", "viz-tooltip");
 
   callout = (g, value) => {
     if (!value) return g.style("display", "none");
@@ -91,7 +92,6 @@ Promise.all([d3.json("data/mobility.json")]).then(function(mobility){
     g
       .style("display", null)
       .style("pointer-events", "none")
-      .style("font-size", 12)
 
     const text = g.selectAll("text")
       .data([null])
