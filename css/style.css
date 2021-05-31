@@ -51,20 +51,6 @@ h6 {
   margin: 0;
 }
 
-@media only screen and (max-width: 768px) {
-  body {
-    font-size: 12px;
-  }
-
-  .title h2 {
-    font-size: 24px;
-  }
-
-  .main-text, .notes {
-    padding: 0 30px;
-  }
-}
-
 .country-line {
   fill: none;
   stroke: #f04e33;
@@ -123,4 +109,31 @@ h6 {
 
 .axis-label {
   font-weight: 800;
+}
+
+@media only screen and (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+
+  .title h2 {
+    font-size: 24px;
+  }
+
+  .main-text, .notes {
+    padding: 0 30px;
+  }
+
+  .axis text {
+    font-size: 10px;
+  }
+
+  .content {
+    padding-top: 15px;
+    padding-bottom: 15px;
+  }
+
+  .plot-row {
+    padding: 0 40px;
+  }
 }

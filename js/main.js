@@ -23,7 +23,7 @@ Promise.all([d3.json("data/weekly_mobility.json")]).then(function(mobility){
   let margin;
 
   if (mobile) {
-    margin = {top: 30, right: 20, bottom: 20, left: 100};
+    margin = {top: 60, right: 10, bottom: 40, left: 10};
   } else {
     margin = {top: 60, right: 15, bottom: 40, left: 15};
   }
@@ -35,11 +35,12 @@ Promise.all([d3.json("data/weekly_mobility.json")]).then(function(mobility){
   const tooltipMargin = 10;
 
   class Plot {
-    constructor(container, dateIdx, mode, subtitle){
+    constructor(container, dateIdx, mode, subtitle, nLines){
       this.container = container;
       this.dateIdx = dateIdx;
       this.mode = mode;
       this.subtitle = subtitle;
+      this.nLines = nLines;
     }
 
     addPlot() {
@@ -52,13 +53,18 @@ Promise.all([d3.json("data/weekly_mobility.json")]).then(function(mobility){
 
       let factor;
       if (isStatic) {
-        factor = 1.3;
+        if (mobile){
+          factor = 0.5;
+        } else {
+          factor = 1.3;
+        }
       } else {
         factor = 1.0;
       }
 
       const containerRect = container.node().getBoundingClientRect();
       const ratio = window.innerWidth / window.innerHeight;
+      // const ratio = 1280. / 800.;
       const width = containerRect.width - margin.left - margin.right,
             height = containerRect.width / ratio * factor - margin.top - margin.bottom;
       vis.width = width;
@@ -131,7 +137,7 @@ Promise.all([d3.json("data/weekly_mobility.json")]).then(function(mobility){
       vis.tooltip = svg.append("g")
         .attr("class", "viz-tooltip");
 
-      vis.callout = (g, value) => {
+      vis.callout = (g, value, nLines) => {
         if (!value) return g.style("display", "none");
 
         g.style("display", null)
@@ -146,13 +152,13 @@ Promise.all([d3.json("data/weekly_mobility.json")]).then(function(mobility){
             .join("tspan")
               .attr("x", 0)
               .attr("y", (d, i) => `${i * 1.1}em`)
-              .style("font-weight", (_, i) => i ? "300" : "700")
+              .style("font-weight", (_, i) => i < nLines ? "700" : "300")
               .text(d => d));
       }
 
       vis.title = svg.append("g")
         .attr("transform", "translate(0, 16)")
-        .call(vis.callout, `${vis.subtitle} \n Week of ${formatTime(dates[dateIdx])}`);
+        .call(vis.callout, `${vis.subtitle} \n Week of ${formatTime(dates[dateIdx])}`, vis.nLines);
 
       vis.path = g.append("g")
         .selectAll("path")
@@ -212,9 +218,7 @@ Promise.all([d3.json("data/weekly_mobility.json")]).then(function(mobility){
               .classed("highlighted", true);
           }
 
-          vis.tooltip.call(vis.callout, `${d.name}`);
-            // .attr("transform", `translate(${vis.xScale(d.values[dateIdx][xVar]) + margin.left + tooltipMargin}, ${vis.yScale(d.values[dateIdx][yVar]) + margin.top})`)
-            // .call(vis.callout, `${d.name}`);
+          vis.tooltip.call(vis.callout, `${d.name}`, 1);
           let tooltipWidth = vis.tooltip.node().getBoundingClientRect().width;
           let xPos = vis.xScale(d.values[dateIdx][xVar]) + margin.left + tooltipMargin;
           if (xPos + tooltipWidth >= width - margin.right) {
@@ -239,7 +243,7 @@ Promise.all([d3.json("data/weekly_mobility.json")]).then(function(mobility){
               .classed("highlighted", false);
           }
 
-          vis.tooltip.call(vis.callout, null);
+          vis.tooltip.call(vis.callout, null, 0);
         });
       }
 
@@ -251,7 +255,7 @@ Promise.all([d3.json("data/weekly_mobility.json")]).then(function(mobility){
         const height = vis.height;
 
         vis.title
-          .call(vis.callout, `${vis.subtitle} \n Week of ${formatTime(dates[idx])}`);
+          .call(vis.callout, `${vis.subtitle} \n Week of ${formatTime(dates[idx])}`, 2);
 
         vis.path
           .classed("closer", d => d.values[idx].improving)
@@ -279,19 +283,26 @@ Promise.all([d3.json("data/weekly_mobility.json")]).then(function(mobility){
 
             vis.tooltip
               .attr("transform", `translate(${xScale(d.values[idx][xVar]) + margin.left + tooltipMargin}, ${yScale(d.values[idx][yVar]) + margin.top})`)
-              .call(vis.callout, `${d.name}`);
+              .call(vis.callout, `${d.name}`, 1);
           })
           .on("mouseleave", (event, d) => {
             vis.path.classed("hidden", false)
               .classed("highlighted", false);
             vis.circle.classed("hidden", false)
               .classed("highlighted", false);
-            vis.tooltip.call(vis.callout, null)
+            vis.tooltip.call(vis.callout, null, 0);
           });
       };
     }
 
-  const svgAnimated = new Plot(d3.select("#viz-animated"), 1, 'animated', 'Change in time spent at workplace v change in time spent in residential areas');
+  let animatedTitle;
+  if (mobile) {
+    animatedTitle = 'Change in time spent at workplace v \n change in time spent in residential areas';
+  } else {
+    animatedTitle = 'Change in time spent at workplace v change in time spent in residential areas';
+  }
+
+  const svgAnimated = new Plot(d3.select("#viz-animated"), 1, 'animated', animatedTitle, 2);
   svgAnimated.addPlot();
   let idx = 0;
 
@@ -304,28 +315,28 @@ Promise.all([d3.json("data/weekly_mobility.json")]).then(function(mobility){
   }, 300)
 
   // Spikes
-  const lockdownStart = new Plot(d3.select("#viz-1"), 5, 'static', 'First lockdown');
+  const lockdownStart = new Plot(d3.select("#viz-1"), 5, 'static', 'First lockdown', 1);
   lockdownStart.addPlot()
 
-  const lockdownEnd = new Plot(d3.select("#viz-2"), 11, 'static', '');
+  const lockdownEnd = new Plot(d3.select("#viz-2"), 11, 'static', '', 0);
   lockdownEnd.addPlot()
 
   // Holidays
-  const summerStart = new Plot(d3.select("#viz-7"), 23, 'static', 'Summer in the Northern Hemisphere');
+  const summerStart = new Plot(d3.select("#viz-7"), 23, 'static', 'Summer in the Northern Hemisphere', 1);
   summerStart.addPlot()
 
-  const christmasStart = new Plot(d3.select("#viz-8"), 45, 'static', 'Christmas');
+  const christmasStart = new Plot(d3.select("#viz-8"), 45, 'static', 'Christmas', 1);
   christmasStart.addPlot()
 
-  const easterStart = new Plot(d3.select("#viz-9"), 58, 'static', 'Easter');
+  const easterStart = new Plot(d3.select("#viz-9"), 58, 'static', 'Easter', 1);
   easterStart.addPlot()
 
-  const summerEnd = new Plot(d3.select("#viz-10"), 25, 'static', '');
+  const summerEnd = new Plot(d3.select("#viz-10"), 25, 'static', '', 0);
   summerEnd.addPlot()
 
-  const christmasEnd = new Plot(d3.select("#viz-11"), 46, 'static', '');
+  const christmasEnd = new Plot(d3.select("#viz-11"), 46, 'static', '', 0);
   christmasEnd.addPlot()
 
-  const easterEnd = new Plot(d3.select("#viz-12"), 60, 'static', '');
+  const easterEnd = new Plot(d3.select("#viz-12"), 60, 'static', '', 0);
   easterEnd.addPlot()
 })
