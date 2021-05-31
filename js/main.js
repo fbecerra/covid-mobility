@@ -304,40 +304,28 @@ Promise.all([d3.json("data/weekly_mobility.json")]).then(function(mobility){
   }, 300)
 
   // Spikes
-  // const vizDiv1 = new Plot(d3.select("#viz-1"), 5, 'static', 'First lockdown');
-  // vizDiv1.addPlot()
-  //
-  // const vizDiv2 = new Plot(d3.select("#viz-2"), 23, 'static', 'Summer in the Northern Hemisphere');
-  // vizDiv2.addPlot()
-  //
-  // const vizDiv3 = new Plot(d3.select("#viz-3"), 49, 'static', 'Christmas Holidays');
-  // vizDiv3.addPlot()
-  //
-  // const vizDiv4 = new Plot(d3.select("#viz-4"), 11, 'static', '');
-  // vizDiv4.addPlot()
-  //
-  // const vizDiv5 = new Plot(d3.select("#viz-5"), 25, 'static', '');
-  // vizDiv5.addPlot()
-  //
-  // const vizDiv6 = new Plot(d3.select("#viz-6"), 63, 'static', '');
-  // vizDiv6.addPlot()
+  const lockdownStart = new Plot(d3.select("#viz-1"), 5, 'static', 'First lockdown');
+  lockdownStart.addPlot()
+
+  const lockdownEnd = new Plot(d3.select("#viz-2"), 11, 'static', '');
+  lockdownEnd.addPlot()
 
   // Holidays
-  const vizDiv7 = new Plot(d3.select("#viz-7"), 23, 'static', 'Summer in the Northern Hemisphere');
-  vizDiv7.addPlot()
+  const summerStart = new Plot(d3.select("#viz-7"), 23, 'static', 'Summer in the Northern Hemisphere');
+  summerStart.addPlot()
 
-  const vizDiv8 = new Plot(d3.select("#viz-8"), 45, 'static', 'Christmas');
-  vizDiv8.addPlot()
+  const christmasStart = new Plot(d3.select("#viz-8"), 45, 'static', 'Christmas');
+  christmasStart.addPlot()
 
-  const vizDiv9 = new Plot(d3.select("#viz-9"), 58, 'static', 'Easter');
-  vizDiv9.addPlot()
+  const easterStart = new Plot(d3.select("#viz-9"), 58, 'static', 'Easter');
+  easterStart.addPlot()
 
-  const vizDiv10 = new Plot(d3.select("#viz-10"), 25, 'static', '');
-  vizDiv10.addPlot()
+  const summerEnd = new Plot(d3.select("#viz-10"), 25, 'static', '');
+  summerEnd.addPlot()
 
-  const vizDiv11 = new Plot(d3.select("#viz-11"), 46, 'static', '');
-  vizDiv11.addPlot()
+  const christmasEnd = new Plot(d3.select("#viz-11"), 46, 'static', '');
+  christmasEnd.addPlot()
 
-  const vizDiv12 = new Plot(d3.select("#viz-12"), 60, 'static', '');
-  vizDiv12.addPlot()
+  const easterEnd = new Plot(d3.select("#viz-12"), 60, 'static', '');
+  easterEnd.addPlot()
 })
