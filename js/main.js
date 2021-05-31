@@ -303,21 +303,39 @@ Promise.all([d3.json("data/weekly_mobility.json")]).then(function(mobility){
     };
   }, 300)
 
-  const vizDiv1 = new Plot(d3.select("#viz-1"), 5, 'static', 'First lockdown');
-  vizDiv1.addPlot()
+  // const vizDiv1 = new Plot(d3.select("#viz-1"), 5, 'static', 'First lockdown');
+  // vizDiv1.addPlot()
+  //
+  // const vizDiv2 = new Plot(d3.select("#viz-2"), 23, 'static', 'Summer in the Northern Hemisphere');
+  // vizDiv2.addPlot()
+  //
+  // const vizDiv3 = new Plot(d3.select("#viz-3"), 45, 'static', 'Christmas Holidays');
+  // vizDiv3.addPlot()
+  //
+  // const vizDiv4 = new Plot(d3.select("#viz-4"), 11, 'static', '');
+  // vizDiv4.addPlot()
+  //
+  // const vizDiv5 = new Plot(d3.select("#viz-5"), 25, 'static', '');
+  // vizDiv5.addPlot()
+  //
+  // const vizDiv6 = new Plot(d3.select("#viz-6"), 46, 'static', '');
+  // vizDiv6.addPlot()
 
-  const vizDiv2 = new Plot(d3.select("#viz-2"), 23, 'static', 'Summer in the Northern Hemisphere');
-  vizDiv2.addPlot()
+  const vizDiv7 = new Plot(d3.select("#viz-1"), 23, 'static', 'Summer in the Northern Hemisphere');
+  vizDiv7.addPlot()
 
-  const vizDiv3 = new Plot(d3.select("#viz-3"), 45, 'static', 'Christmas Holidays');
-  vizDiv3.addPlot()
+  const vizDiv8 = new Plot(d3.select("#viz-2"), 45, 'static', 'Christmas');
+  vizDiv8.addPlot()
 
-  const vizDiv4 = new Plot(d3.select("#viz-4"), 11, 'static', '');
-  vizDiv4.addPlot()
+  const vizDiv9 = new Plot(d3.select("#viz-3"), 58, 'static', 'Easter');
+  vizDiv9.addPlot()
 
-  const vizDiv5 = new Plot(d3.select("#viz-5"), 25, 'static', '');
-  vizDiv5.addPlot()
+  const vizDiv10 = new Plot(d3.select("#viz-4"), 25, 'static', '');
+  vizDiv10.addPlot()
 
-  const vizDiv6 = new Plot(d3.select("#viz-6"), 46, 'static', '');
-  vizDiv6.addPlot()
+  const vizDiv11 = new Plot(d3.select("#viz-5"), 46, 'static', '');
+  vizDiv11.addPlot()
+
+  const vizDiv12 = new Plot(d3.select("#viz-6"), 60, 'static', '');
+  vizDiv12.addPlot()
 })
