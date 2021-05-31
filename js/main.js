@@ -192,6 +192,46 @@ Promise.all([d3.json("data/weekly_mobility.json")]).then(function(mobility){
         .attr("cx", d => vis.xScale(d.values[dateIdx][xVar]))
         .attr("cy", d => vis.yScale(d.values[dateIdx][yVar]))
 
+      if (!isStatic){
+        let xPos, xOffset;
+        if (mobile) {
+          xPos = vis.xScale(-60);
+          xOffset = 5;
+        } else {
+          xPos = vis.xScale(0);
+          xOffset = 10;
+        }
+        const legend = g.append("g")
+          .attr("transform", `translate(${xPos + xOffset},0)`);
+        legend.selectAll("legend-line")
+          .data([0, 1])
+          .join("line")
+            .attr("class", "legend-line")
+            .classed("closer", d => d)
+            .attr("x1", 0)
+            .attr("y1", (_, i) => (i + 1) * 18)
+            .attr("x2", 40)
+            .attr("y2", (_, i) => (i + 1) * 18);
+
+        legend.selectAll(".legend-circle")
+          .data([0, 1])
+          .join("circle")
+            .attr("class", "legend-circle")
+            .classed("closer", d => d)
+            .attr("cx", 40)
+            .attr("cy", (_, i) => (i + 1) * 18)
+            .attr("r", circleRadius);
+
+        legend.selectAll(".legend-text")
+          .data(["moving towards more time at workplace", "moving towards less time at workplace"])
+          .join("text")
+            .attr("class", "legend-text")
+            .classed("closer", d => d)
+            .attr("x", 45)
+            .attr("y", (_, i) => (i + 1) * 18 + 3)
+            .text(d => d);
+      }
+
       const voronoi = d3.Delaunay
         .from(data.countries, d => vis.xScale(d.values[dateIdx][xVar]), d => vis.yScale(d.values[dateIdx][yVar]))
         .voronoi([margin.left, 0, width - margin.right, height - margin.bottom]);

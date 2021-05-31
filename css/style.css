@@ -117,13 +117,31 @@ h6 {
   font-weight: 700;
 }
 
-.axis text {
+.axis text, .legend-text {
   fill: darkgray;
   font-size: 12px;
 }
 
 .axis-label {
   font-weight: 800;
+}
+
+.legend-line {
+  fill: none;
+  stroke: #f04e33;
+  stroke-width: 1.5px;
+}
+
+.legend-line.closer {
+  stroke: #00a7c0;
+}
+
+.legend-circle {
+  fill: #f04e33;
+}
+
+.legend-circle.closer {
+  fill: #00a7c0;
 }
 
 @media only screen and (max-width: 768px) {
@@ -141,7 +159,7 @@ h6 {
   }
 
   .title p {
-    font-size: 18px;
+    font-size: 16px;
     padding-top: 10px;
   }
 
@@ -149,7 +167,7 @@ h6 {
     padding: 0 30px;
   }
 
-  .axis text {
+  .axis text, .legend-text {
     font-size: 10px;
   }
 
