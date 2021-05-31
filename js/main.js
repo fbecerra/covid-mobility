@@ -25,7 +25,7 @@ Promise.all([d3.json("data/weekly_mobility.json")]).then(function(mobility){
   if (mobile) {
     margin = {top: 30, right: 20, bottom: 20, left: 100};
   } else {
-    margin = {top: 50, right: 15, bottom: 40, left: 15};
+    margin = {top: 60, right: 15, bottom: 40, left: 15};
   }
 
   const pathOpacity = 0.3;
@@ -101,8 +101,20 @@ Promise.all([d3.json("data/weekly_mobility.json")]).then(function(mobility){
         .scale(vis.yScale)
         .tickValues(d3.range(-0, 60, 20));
 
-      gXAxis.call(xAxis);
-      gYAxis.call(yAxis);
+      gXAxis.call(xAxis)
+        .call(g => g.append("text")
+          .attr("x", width / 2)
+          .attr("y", margin.bottom - 4)
+          .attr("fill", "currentColor")
+          .attr("text-anchor", "middle")
+          .text("Change in workplace"));;
+      gYAxis.call(yAxis)
+        .call(g => g.append("text")
+          .attr("x", -margin.left)
+          .attr("y", 0)
+          .attr("fill", "currentColor")
+          .attr("text-anchor", "start")
+          .text("Change in residential"))
 
       gXAxis.selectAll(".domain").remove();
       gXAxis.selectAll(".tick line")
@@ -134,23 +146,13 @@ Promise.all([d3.json("data/weekly_mobility.json")]).then(function(mobility){
             .join("tspan")
               .attr("x", 0)
               .attr("y", (d, i) => `${i * 1.1}em`)
-              .style("font-weight", (_, i) => i ? "300" : "600")
+              .style("font-weight", (_, i) => i ? "300" : "700")
               .text(d => d));
       }
 
-      if (isStatic){
-        vis.title = svg.append("g")
-          .attr("transform", `translate(0, ${margin.top/2})`)
-          .call(vis.callout, `Week of ${formatTime(dates[dateIdx])} \n ${vis.subtitle}`)
-      } else {
-        vis.title = svg.append("g")
-          .attr("transform", `translate(0, ${margin.top/2})`)
-          .selectAll("text")
-          .data([dates[dateIdx]])
-          .join("text")
-            .attr("class", "plot-title")
-            .text(d => `Week of ${formatTime(d)} \n asdks`)
-      }
+      vis.title = svg.append("g")
+        .attr("transform", "translate(0, 16)")
+        .call(vis.callout, `${vis.subtitle} \n Week of ${formatTime(dates[dateIdx])}`);
 
       vis.path = g.append("g")
         .selectAll("path")
@@ -241,9 +243,8 @@ Promise.all([d3.json("data/weekly_mobility.json")]).then(function(mobility){
         const width = vis.width;
         const height = vis.height;
 
-        vis.title.data([dates[idx]])
-          .join("text")
-            .text(d => `Week of ${formatTime(d)}`)
+        vis.title
+          .call(vis.callout, `${vis.subtitle} \n Week of ${formatTime(dates[idx])}`);
 
         vis.path
           .classed("closer", d => d.values[idx].moving_closer)
@@ -283,7 +284,7 @@ Promise.all([d3.json("data/weekly_mobility.json")]).then(function(mobility){
       };
     }
 
-  const svgAnimated = new Plot(d3.select("#viz-animated"), 1, 'animated', '');
+  const svgAnimated = new Plot(d3.select("#viz-animated"), 1, 'animated', 'Change');
   svgAnimated.addPlot();
   let idx = 0;
 
