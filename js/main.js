@@ -177,11 +177,11 @@ Promise.all([d3.json("data/weekly_mobility.json")]).then(function(mobility){
             .style("pointer-events", "all")
 
       vis.path
-        .classed("closer", d => d.values[dateIdx].moving_closer)
+        .classed("closer", d => d.values[dateIdx].improving)
         .transition().duration(200)
         .attr("d", d => vis.line(d.values.slice(dateIdx - trail, dateIdx + 1)));
 
-      vis.circle.classed("closer", d => d.values[dateIdx].moving_closer)
+      vis.circle.classed("closer", d => d.values[dateIdx].improving)
         .transition().duration(200)
         .attr("cx", d => vis.xScale(d.values[dateIdx][xVar]))
         .attr("cy", d => vis.yScale(d.values[dateIdx][yVar]))
@@ -254,12 +254,12 @@ Promise.all([d3.json("data/weekly_mobility.json")]).then(function(mobility){
           .call(vis.callout, `${vis.subtitle} \n Week of ${formatTime(dates[idx])}`);
 
         vis.path
-          .classed("closer", d => d.values[idx].moving_closer)
+          .classed("closer", d => d.values[idx].improving)
           .transition().duration(200)
           .attr("d", d => vis.line(d.values.slice(idx - trail, idx + 1)));
 
         vis.circle
-          .classed("closer", d => d.values[idx].moving_closer)
+          .classed("closer", d => d.values[idx].improving)
           .transition().duration(200)
           .attr("cx", d => xScale(d.values[idx][xVar]))
           .attr("cy", d => yScale(d.values[idx][yVar]))
