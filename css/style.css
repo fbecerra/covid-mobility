@@ -8,10 +8,25 @@ body {
   text-align: center;
   padding-top: 40px;
   padding-bottom: 30px;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.title h1 {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 20px;
+  color: #e3120b;
+  padding-bottom: 10px;
+  font-weight: 700;
 }
 
 .title h2 {
   font-size: 42px;
+}
+
+.title p {
+  font-size: 24px;
+  padding-top: 20px;
 }
 
 .content {
@@ -116,8 +131,18 @@ h6 {
     font-size: 14px;
   }
 
+  .title h1 {
+    font-size: 14px;
+    font-weight: 700;
+  }
+
   .title h2 {
     font-size: 24px;
+  }
+
+  .title p {
+    font-size: 18px;
+    padding-top: 10px;
   }
 
   .main-text, .notes {
