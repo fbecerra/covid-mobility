@@ -105,16 +105,16 @@ Promise.all([d3.json("data/weekly_mobility.json")]).then(function(mobility){
         .call(g => g.append("text")
           .attr("x", width / 2)
           .attr("y", margin.bottom - 4)
-          .attr("fill", "currentColor")
+          .attr("class", "axis-label")
           .attr("text-anchor", "middle")
-          .text("Change in workplace"));;
+          .text("Change in time spent at workplace, % points"));;
       gYAxis.call(yAxis)
         .call(g => g.append("text")
           .attr("x", -margin.left)
           .attr("y", 0)
-          .attr("fill", "currentColor")
+          .attr("class", "axis-label")
           .attr("text-anchor", "start")
-          .text("Change in residential"))
+          .text("Change in time spent in residential areas, % points"))
 
       gXAxis.selectAll(".domain").remove();
       gXAxis.selectAll(".tick line")
@@ -291,7 +291,7 @@ Promise.all([d3.json("data/weekly_mobility.json")]).then(function(mobility){
       };
     }
 
-  const svgAnimated = new Plot(d3.select("#viz-animated"), 1, 'animated', 'Change');
+  const svgAnimated = new Plot(d3.select("#viz-animated"), 1, 'animated', 'Change in time spent at workplace v change in time spent in residential areas');
   svgAnimated.addPlot();
   let idx = 0;
 

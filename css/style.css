@@ -114,3 +114,12 @@ h6 {
 .plot-title {
   font-weight: 700;
 }
+
+.axis text {
+  fill: darkgray;
+  font-size: 12px;
+}
+
+.axis-label {
+  font-weight: 800;
+}
