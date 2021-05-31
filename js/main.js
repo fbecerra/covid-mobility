@@ -35,12 +35,12 @@ Promise.all([d3.json("data/weekly_mobility.json")]).then(function(mobility){
   const tooltipMargin = 10;
 
   class Plot {
-    constructor(container, dateIdx, mode){
+    constructor(container, dateIdx, mode, subtitle){
       this.container = container;
       this.dateIdx = dateIdx;
       this.mode = mode;
+      this.subtitle = subtitle;
     }
-
 
     addPlot() {
       const vis = this;
@@ -134,17 +134,23 @@ Promise.all([d3.json("data/weekly_mobility.json")]).then(function(mobility){
             .join("tspan")
               .attr("x", 0)
               .attr("y", (d, i) => `${i * 1.1}em`)
-              .style("font-weight", (_, i) => i ? null : "600")
+              .style("font-weight", (_, i) => i ? "300" : "600")
               .text(d => d));
       }
 
-      vis.title = svg.append("g")
-        .attr("transform", `translate(0, ${margin.top/2})`)
-        .selectAll("text")
-        .data([dates[dateIdx]])
-        .join("text")
-          .attr("class", "plot-title")
-          .text(d => `Week of ${formatTime(d)}`)
+      if (isStatic){
+        vis.title = svg.append("g")
+          .attr("transform", `translate(0, ${margin.top/2})`)
+          .call(vis.callout, `Week of ${formatTime(dates[dateIdx])} \n ${vis.subtitle}`)
+      } else {
+        vis.title = svg.append("g")
+          .attr("transform", `translate(0, ${margin.top/2})`)
+          .selectAll("text")
+          .data([dates[dateIdx]])
+          .join("text")
+            .attr("class", "plot-title")
+            .text(d => `Week of ${formatTime(d)} \n asdks`)
+      }
 
       vis.path = g.append("g")
         .selectAll("path")
@@ -277,7 +283,7 @@ Promise.all([d3.json("data/weekly_mobility.json")]).then(function(mobility){
       };
     }
 
-  const svgAnimated = new Plot(d3.select("#viz-animated"), 1, 'animated');
+  const svgAnimated = new Plot(d3.select("#viz-animated"), 1, 'animated', '');
   svgAnimated.addPlot();
   let idx = 0;
 
@@ -289,21 +295,21 @@ Promise.all([d3.json("data/weekly_mobility.json")]).then(function(mobility){
     };
   }, 300)
 
-  const vizDiv1 = new Plot(d3.select("#viz-1"), 5, 'static');
+  const vizDiv1 = new Plot(d3.select("#viz-1"), 5, 'static', 'First lockdown');
   vizDiv1.addPlot()
 
-  const vizDiv2 = new Plot(d3.select("#viz-2"), 23, 'static');
+  const vizDiv2 = new Plot(d3.select("#viz-2"), 23, 'static', 'Summer in the Northern Hemisphere');
   vizDiv2.addPlot()
 
-  const vizDiv3 = new Plot(d3.select("#viz-3"), 45, 'static');
+  const vizDiv3 = new Plot(d3.select("#viz-3"), 45, 'static', 'Christmas Holidays');
   vizDiv3.addPlot()
 
-  const vizDiv4 = new Plot(d3.select("#viz-4"), 11, 'static');
+  const vizDiv4 = new Plot(d3.select("#viz-4"), 11, 'static', '');
   vizDiv4.addPlot()
 
-  const vizDiv5 = new Plot(d3.select("#viz-5"), 25, 'static');
+  const vizDiv5 = new Plot(d3.select("#viz-5"), 25, 'static', '');
   vizDiv5.addPlot()
 
-  const vizDiv6 = new Plot(d3.select("#viz-6"), 46, 'static');
+  const vizDiv6 = new Plot(d3.select("#viz-6"), 46, 'static', '');
   vizDiv6.addPlot()
 })
