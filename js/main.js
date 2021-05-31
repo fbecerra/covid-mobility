@@ -172,7 +172,7 @@ Promise.all([d3.json("data/weekly_mobility.json")]).then(function(mobility){
          .selectAll("path")
          .data(data.countries)
          .join("path")
-            .attr("opacity", 0.5)
+            .attr("opacity", 1.0)
             .attr("fill", "none")
             .style("pointer-events", "all")
 
@@ -188,7 +188,7 @@ Promise.all([d3.json("data/weekly_mobility.json")]).then(function(mobility){
 
       const voronoi = d3.Delaunay
         .from(data.countries, d => vis.xScale(d.values[dateIdx][xVar]), d => vis.yScale(d.values[dateIdx][yVar]))
-        .voronoi([margin.left, margin.top, width - margin.right, height - margin.bottom]);
+        .voronoi([margin.left, 0, width - margin.right, height - margin.bottom]);
       vis.cells.attr("d", (d,i) => voronoi.renderCell(i))
         .on("mouseover", (event, d) => {
           if (isStatic) {
@@ -212,9 +212,16 @@ Promise.all([d3.json("data/weekly_mobility.json")]).then(function(mobility){
               .classed("highlighted", true);
           }
 
-          vis.tooltip
-            .attr("transform", `translate(${vis.xScale(d.values[dateIdx][xVar]) + margin.left + tooltipMargin}, ${vis.yScale(d.values[dateIdx][yVar]) + margin.top})`)
-            .call(vis.callout, `${d.name}`);
+          vis.tooltip.call(vis.callout, `${d.name}`);
+            // .attr("transform", `translate(${vis.xScale(d.values[dateIdx][xVar]) + margin.left + tooltipMargin}, ${vis.yScale(d.values[dateIdx][yVar]) + margin.top})`)
+            // .call(vis.callout, `${d.name}`);
+          let tooltipWidth = vis.tooltip.node().getBoundingClientRect().width;
+          let xPos = vis.xScale(d.values[dateIdx][xVar]) + margin.left + tooltipMargin;
+          if (xPos + tooltipWidth >= width - margin.right) {
+            vis.tooltip.attr("transform", `translate(${vis.xScale(d.values[dateIdx][xVar]) + margin.left - tooltipWidth - tooltipMargin}, ${vis.yScale(d.values[dateIdx][yVar]) + margin.top})`)
+          } else {
+            vis.tooltip.attr("transform", `translate(${vis.xScale(d.values[dateIdx][xVar]) + margin.left + tooltipMargin}, ${vis.yScale(d.values[dateIdx][yVar]) + margin.top})`)
+          }
         })
         .on("mouseleave", (event, d) => {
           if (isStatic) {
@@ -259,7 +266,7 @@ Promise.all([d3.json("data/weekly_mobility.json")]).then(function(mobility){
 
         const voronoi = d3.Delaunay
           .from(data.countries, d => xScale(d.values[idx][xVar]), d => yScale(d.values[idx][yVar]))
-          .voronoi([margin.left, margin.top, width - margin.right, height - margin.bottom]);
+          .voronoi([margin.left, 0, width - margin.right, height - margin.bottom]);
         vis.cells.attr("d", (d,i) => voronoi.renderCell(i))
           .on("mouseover", (event, d) => {
             vis.path.classed("hidden", c => c.name !== d.name);
