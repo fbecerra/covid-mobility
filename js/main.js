@@ -255,7 +255,7 @@ Promise.all([d3.json("data/weekly_mobility.json")]).then(function(mobility){
         const height = vis.height;
 
         vis.title
-          .call(vis.callout, `${vis.subtitle} \n Week of ${formatTime(dates[idx])}`, 2);
+          .call(vis.callout, `${vis.subtitle} \n Week of ${formatTime(dates[idx])}`, vis.nLines);
 
         vis.path
           .classed("closer", d => d.values[idx].improving)
@@ -295,14 +295,16 @@ Promise.all([d3.json("data/weekly_mobility.json")]).then(function(mobility){
       };
     }
 
-  let animatedTitle;
+  let animatedTitle, nLines;
   if (mobile) {
     animatedTitle = 'Change in time spent at workplace v \n change in time spent in residential areas';
+    nLines = 2;
   } else {
     animatedTitle = 'Change in time spent at workplace v change in time spent in residential areas';
+    nLines = 1
   }
 
-  const svgAnimated = new Plot(d3.select("#viz-animated"), 1, 'animated', animatedTitle, 2);
+  const svgAnimated = new Plot(d3.select("#viz-animated"), 1, 'animated', animatedTitle, nLines);
   svgAnimated.addPlot();
   let idx = 0;
 
