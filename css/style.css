@@ -1,6 +1,6 @@
 body {
   font-family: 'Open Sans', sans-serif;
-  font-size: 16px;
+  font-size: 18px;
 }
 
 .title {
@@ -8,17 +8,38 @@ body {
   text-align: center;
   padding-top: 40px;
   padding-bottom: 30px;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.title h1 {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 20px;
+  color: #e3120b;
+  padding-bottom: 10px;
+  font-weight: 700;
 }
 
 .title h2 {
   font-size: 42px;
 }
 
+.title p {
+  font-size: 24px;
+  padding-top: 20px;
+}
+
 .content {
-  padding-bottom: 30px;
+  padding-top: 30px;
+  padding-bottom: 50px;
+}
+
+.plot-row {
+  padding: 0 80px;
 }
 
 .footer {
+  padding: 20px 0;
   border-top: 1px solid #ccc !important;
 }
 
@@ -46,32 +67,121 @@ h6 {
   margin: 0;
 }
 
+.country-line {
+  fill: none;
+  stroke: #f04e33;
+  stroke-opacity: 0.3;
+  stroke-width: 2.5px;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.country-line.closer {
+  stroke: #00a7c0;
+}
+
+.country-line.highlighted {
+  stroke-opacity: 0.8;
+}
+
+.country-line.hidden {
+  stroke: lightgray;
+  stroke-opacity: 0.2;
+}
+
+.country-circle {
+  fill: #f04e33;
+}
+
+.country-circle.closer {
+  fill: #00a7c0;
+}
+
+.country-circle.highlighted {
+  opacity: 1.0;
+}
+
+.country-circle.hidden {
+  fill: lightgray;
+  opacity: 0.2;
+}
+
+.plot {
+  font-family: 'Lato', sans-serif;
+}
+
+.viz-tooltip {
+  font-size: 14px;
+}
+
+.plot-title {
+  font-weight: 700;
+}
+
+.axis text, .legend-text {
+  fill: darkgray;
+  font-size: 12px;
+}
+
+.axis-label {
+  font-weight: 800;
+}
+
+.legend-line {
+  fill: none;
+  stroke: #f04e33;
+  stroke-width: 1.5px;
+}
+
+.legend-line.closer {
+  stroke: #00a7c0;
+}
+
+.legend-circle {
+  fill: #f04e33;
+}
+
+.legend-circle.closer {
+  fill: #00a7c0;
+}
+
 @media only screen and (max-width: 768px) {
   body {
-    font-size: 12px;
+    font-size: 14px;
+  }
+
+  .footer {
+    padding: 10px 0;
+  }
+
+  .title h1 {
+    font-size: 14px;
+    font-weight: 700;
   }
 
   .title h2 {
     font-size: 24px;
   }
 
+  .title p {
+    font-size: 16px;
+    padding-top: 10px;
+  }
+
   .main-text, .notes {
     padding: 0 30px;
   }
-}
 
-.country-line {
-  fill: none;
-  opacity: 0.5;
-  stroke-width: 2px;
-  stroke-linejoin: round;
-  stroke-linecap: round;
-}
+  .axis text, .legend-text {
+    font-size: 10px;
+  }
 
-#viz {
-  font-family: 'Lato', sans-serif;
-}
+  .content {
+    padding-top: 15px;
+    padding-bottom: 20px;
+  }
 
-.viz-tooltip {
-  font-size: 14px;
+  .plot-row {
+    padding: 0 40px;
+  }
 }
